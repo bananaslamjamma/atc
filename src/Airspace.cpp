@@ -9,12 +9,42 @@
 using namespace std;
 
 
-//this is just gonna hold the functions to manipulate the airspace
+//this isn't really an "airspace"
+// it manages a data structure filled with aircrafts really
+
+
 Airspace::Airspace() {
+	//just have the mutex here
+	pthread_mutexattr_t attr;
+	/* synchronization stuff */
+	pthread_mutexattr_init(&attr);
+	//lock count
+	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+	//mutex init
+	pthread_mutex_init(&this->m_airspace, &attr);
 }
+
+
 
 Airspace::~Airspace() {
 }
+
+// i'll have this read the input file
+void Airspace::init(){
+	// have some file reader set up
+
+	//if i want to have each plane be its own thread( it should)
+
+
+}
+
+// run()
+// funct to update each flight's position
+void Airspace::updateAllPlanesPosition(){
+
+
+}
+
 
 
 //add aircraft to the air space

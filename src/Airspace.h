@@ -18,6 +18,8 @@ public:
 
 	Airspace();
 	virtual ~Airspace();
+	void init();
+
 
 	void setAircraft();
 
@@ -30,6 +32,8 @@ public:
 	void updateAltitude(int, int);
 	void updateSpeed(int ,Velocity);
 	void updatePlaneLocation();
+
+	void updateAllPlanesPosition();
 
 
 private:
