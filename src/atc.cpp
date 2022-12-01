@@ -9,23 +9,6 @@
 pthread_attr_t attr;
 
 
-class Wrapper {
-   public:
-      void member1() {
-          cout << "i am member1" << endl;
-      }
-      void member2(const char *arg1, unsigned arg2) {
-    	  cout << "i am member1" << endl;
-      }
-      std::thread member1Thread() {
-          return std::thread([=] { member1(); });
-      }
-      std::thread member2Thread(const char *arg1, unsigned arg2) {
-          return std::thread([=] { member2(arg1, arg2); });
-      }
-};
-
-
 void *threadDefault (void *arg) {
 	printf("A thread with default attributes is created\n\n");
 	return NULL;
@@ -63,9 +46,6 @@ int main (int argc, char* argv[]) {
 		Aircraft air(5);
 		air.AircraftPrint();
 		int rc;
-		cout << "i am member1" << endl;
-
-
 		/* Initialize attributes */
 		rc = pthread_attr_init(&attr);
 		if (rc)
