@@ -22,6 +22,10 @@ public:
 	void scanFlightZone(vector<Aircraft*>); //assuming this function will recieve a vector of pointers to aircraft objects
 	void dispAircraftCrashing();
 	void dispAicraftLow();
+	void runRadar();
+	void scanFlightZone();
+	Radar(Airspace*,  Communication*);
+	Radar()
 
 	//lets declare some constants that will probably  be useful
 	const int static MIN_RADAR_HEIGHT = 15000;
@@ -40,7 +44,8 @@ private:
 
 	Airspace* airspaceR;
 	Communication* communicationR;
-	vector<Aircraft*> flightsInAirSpace //example program has this public, why?
+	vector<Aircraft*> flightsInAirSpace;
+	//example program has this public, why?
 
 };
 

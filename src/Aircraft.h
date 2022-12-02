@@ -7,9 +7,13 @@
 #include <vector>
 #include "Coordinates.h"
 #include "Velocity.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <fcntl.h>
-#include <sys/mman.h> //I dunno what this is
+#include <sys/mman.h>
+#include <iostream>
 
 
 
@@ -17,12 +21,13 @@
 class Aircraft{
 
 public:
+	pthread_t thread_id;
 	Aircraft(int, Coordinates, Velocity, int);
 	Aircraft();
 	Aircraft(int);
 	virtual ~Aircraft();
 
-	void init_Aircraft();
+	void initializeAircraft();
 
 	void setAltitude(int);
 	void updateCoordinates();
@@ -39,11 +44,10 @@ public:
 
 	void AircraftPrint();
 	void * Aircraft_run(void *);
-	void *dummy(int);
+	void *dummy(void *);
 	void test();
 
 private:
-	pthread_t thread_id;
 	int p_id;
 	Coordinates location;
 	Coordinates grid_pos;

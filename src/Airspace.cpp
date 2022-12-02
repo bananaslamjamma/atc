@@ -7,6 +7,7 @@
 #include "Velocity.h"
 #include "Coordinates.h"
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -45,7 +46,7 @@ Coordinates tempCoords;
 Velocity tempVel;
 
 //Input file structured as: [ArrivalTime], [flightID], [xSpeed], [ySpeed], [zSpeed], [xPos], [yPos], [zPos]
-	while(getLine(planeFile, appTime )) //check if there's still another plane to load
+	while(std::getline(planeFile, appTime )) //check if there's still another plane to load
 	{
 		//get data out of the file
 		planeFile >> appTime >> flightID >> xSpeed >> ySpeed >> zSpeed >> xPos >> yPos >> zPos;
@@ -66,13 +67,6 @@ Velocity tempVel;
 	}
 		//Verify this information somehow? It would be a debugging functionality only.
 		//This should in theory work, barring any syntax errors.
-}
-
-// run()
-// funct to update each flight's position
-void Airspace::updateAllPlanesPosition(){
-
-
 }
 
 // run()

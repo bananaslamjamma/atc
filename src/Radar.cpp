@@ -5,6 +5,7 @@
 #include "Velocity.h"
 #include "Airspace.h"
 #include <pthread.h>
+#include "Radar.h"
 
 using namespace std;
 
