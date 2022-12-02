@@ -1,5 +1,7 @@
 
 #include <iostream>
+#include <fstream>
+#include <iomanip>
 #include "Airspace.h"
 #include "Aircraft.h"
 #include "Velocity.h"
@@ -8,6 +10,7 @@
 
 using namespace std;
 
+#define PLANEFILE "testPlanes.txt"
 
 //this isn't really an "airspace"
 // it manages a data structure filled with aircrafts really
@@ -31,9 +34,43 @@ Airspace::~Airspace() {
 
 // i'll have this read the input file
 void Airspace::init(){
-	// have some file reader set up
+//read test cases from a .txt file and load them into a vector of airplanes
+ifstream planeFile;
+planeFile.open(PLANEFILE);
 
-	//if i want to have each plane be its own thread( it should)
+//Declare temporary variables
+int appTime, xPos, xSpeed, yPos, ySpeed, zPos, zSpeed;
+string flightID;
+Coordinates tempCoords;
+Velocity tempVel;
+
+//Input file structured as: [ArrivalTime], [flightID], [xSpeed], [ySpeed], [zSpeed], [xPos], [yPos], [zPos]
+	while(getLine(planeFile, appTime )) //check if there's still another plane to load
+	{
+		//get data out of the file
+		planeFile >> appTime >> flightID >> xSpeed >> ySpeed >> zSpeed >> xPos >> yPos >> zPos;
+		//create coordinates and velocity objects
+		tempCoords.p_x = xPos;
+		tempCoords.p_y = yPos;
+		tempCoords.p_z = zPos;
+
+		tempVel.v_x = xSpeed;
+		tempVel.v_y = ySpeed;
+		tempVel.v_z = zSpeed;
+
+		//create a plane object
+		Aircraft tempAircraft(flightID, tempCoords, tempVel, appTime);
+		//load it into airCraft vector or maybe just call addAircraft directly?
+		addAircraft(tempAircraft);
+
+	}
+		//Verify this information somehow? It would be a debugging functionality only.
+		//This should in theory work, barring any syntax errors.
+}
+
+// run()
+// funct to update each flight's position
+void Airspace::updateAllPlanesPosition(){
 
 
 }
