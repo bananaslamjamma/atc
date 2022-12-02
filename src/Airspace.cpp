@@ -7,6 +7,7 @@
 #include "Velocity.h"
 #include "Coordinates.h"
 #include <vector>
+#include <string>
 
 using namespace std;
 
