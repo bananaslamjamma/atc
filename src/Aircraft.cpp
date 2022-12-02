@@ -32,10 +32,29 @@ Aircraft::Aircraft(int id){
 	dummy_v.v_x = 3;
 	dummy_v.v_y = 2;
 	dummy_v.v_z = 1;
-	initializeAircraft();
+
+	init_Aircraft();
 }
 
 
+void Aircraft::init_Aircraft(){
+	int rc;
+
+
+	// i don't care about the shared memory as of rn
+
+	//pthread_attr_t attr;
+	/* synchronization stuff */
+	//pthread_attr_getdetachstate = (&attr ,PTHREAD_CREATE_JOINABLE);
+	//pthread_mutexattr_init(&attr);
+	//lock count
+	//pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+	//mutex init
+	//pthread_mutex_init(&this->mutex, &attr);
+	 //rc = pthread_create(&thread_id, NULL,Aircraft_run,(void *) this)!=EOK
+
+
+}
 
 void *dummy(int arg){
 
@@ -58,37 +77,6 @@ void * Aircraft_run(void *arg){
 	//pthread_exit(NULL);
 	return NULL;
 }
-
-
-//this doesn't need to be declared as a member function
-void * test_routine(void *arg){
-	sleep(5);
-	printf("waking up");
-	return NULL;
-
-}
-
-void Aircraft::initializeAircraft(){
-
-	// i don't care about the shared memory as of rn
-	//pthread_attr_t attr;
-	/* synchronization stuff */
-	//pthread_attr_getdetachstate = (&attr ,PTHREAD_CREATE_JOINABLE);
-	//pthread_mutexattr_init(&attr);
-	//lock count
-	//pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-	//mutex init
-	//pthread_mutex_init(&this->mutex, &attr);
-	 //rc = pthread_create(&thread_id, NULL,Aircraft_run,(void *) this)!=EOK
-
-	int rc;
-	//system generates a thread
-	if(pthread_create(&thread_id,NULL, test_routine,(void *) this)!=EOK){
-		thread_id=NULL;
-	}
-}
-
-
 
 void Aircraft::setLocation(Coordinates newPos){
 	location = newPos;
