@@ -43,9 +43,6 @@ public:
 	Aircraft getCollider();
 
 	void AircraftPrint();
-	void * Aircraft_run(void *);
-	void *dummy(void *);
-	void test();
 
 private:
 	int p_id;

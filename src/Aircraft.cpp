@@ -33,13 +33,24 @@ Aircraft::Aircraft(int id){
 	dummy_v.v_y = 2;
 	dummy_v.v_z = 1;
 
-	init_Aircraft();
+	initializeAircraft();
 }
 
 
-void Aircraft::init_Aircraft(){
+
+void *dummy(void *){
+
+	sleep(5);
+	cout << "I'm a dummy";
+	return NULL;
+}
+
+void Aircraft::initializeAircraft(){
 	int rc;
 
+	if(pthread_create(&thread_id,NULL, dummy,(void *) this)!=EOK){
+			thread_id=NULL;
+		}
 
 	// i don't care about the shared memory as of rn
 
@@ -54,13 +65,6 @@ void Aircraft::init_Aircraft(){
 	 //rc = pthread_create(&thread_id, NULL,Aircraft_run,(void *) this)!=EOK
 
 
-}
-
-void *dummy(int arg){
-
-	sleep(5);
-	cout << "I'm a dummy";
-	return NULL;
 }
 
 Aircraft::~Aircraft() {
