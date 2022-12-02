@@ -39,9 +39,7 @@ void *threadCustomized (void *arg) {
 	return NULL;
 }
 
-
-int main (int argc, char* argv[]) {
-
+void * old(){
 	pthread_t threadD, threadC, threadA;
 		Aircraft air(5);
 		air.AircraftPrint();
@@ -55,7 +53,7 @@ int main (int argc, char* argv[]) {
 		rc = pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 		if (rc)
 			printf("ERROR; RC from pthread_attr_setdetachstate() is %d \n", rc);
-		//rc = pthread_create(&threadA, NULL, air.dummy, (int*) this);
+
 
 
 		/* Creating thread with default attributes */
@@ -78,6 +76,14 @@ int main (int argc, char* argv[]) {
 		/* Free up attribute object and exit */
 		pthread_attr_destroy(&attr);
 		pthread_exit(NULL);
+
+}
+
+int main (int argc, char* argv[]) {
+	Aircraft air(5);
+	//pthread_join(writer.thread_id,NULL);
+	pthread_join(air.thread_id,NULL);
+	return EXIT_SUCCESS;
 
 
 }

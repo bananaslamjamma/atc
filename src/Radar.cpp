@@ -6,6 +6,7 @@
 #include "Airspace.h"
 #include "Radar.h"
 #include <pthread.h>
+#include "Radar.h"
 
 using namespace std;
 
