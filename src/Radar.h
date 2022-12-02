@@ -16,12 +16,15 @@ using namespace std;
 
 class Radar{
 public:
-	Radar(Airspace*, Communication*, pthread_attr_t* = nullptr);
+	Radar(Airspace*, Communication*, pthread_attr_t*);
+	Radar(); //blank constructor
 	virtual ~Radar();
-	pthread_t run(); //im not so sure this should be here?
-	void scanFlightZone(vector<Aircraft*>); //assuming this function will recieve a vector of pointers to aircraft objects
-	void dispAircraftCrashing();
-	void dispAicraftLow();
+
+	pthread_t run(); //i'm not so sure this should be here?
+	void runRadar();
+	void scanFlightZone(vector<Aircraft*>); //assuming this function will receive a vector of pointers to aircraft objects
+	void dispAircraftAboutToCrash();
+	void dispAircraftTooLow();
 
 	//lets declare some constants that will probably  be useful
 	const int static MIN_RADAR_HEIGHT = 15000;
@@ -40,8 +43,8 @@ private:
 
 	Airspace* airspaceR;
 	Communication* communicationR;
-	vector<Aircraft*> flightsInAirSpace //example program has this public, why?
+	vector<Aircraft*> flightsInAirSpace; //example program has this public, why?
 
 };
 
-#endif;
+#endif
