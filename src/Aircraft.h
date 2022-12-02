@@ -27,7 +27,7 @@ public:
 	Aircraft(int);
 	virtual ~Aircraft();
 
-	void initializeAircraft();
+	void init_Aircraft();
 
 	void setAltitude(int);
 	void updateCoordinates();

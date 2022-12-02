@@ -29,6 +29,8 @@ Radar::Radar(){
 	    this->tAttr = nullptr;
 }
 
+Radar::~Radar(){} //Deconstructor needed to be declared. Maybe something will be put in here?
+
 void Radar::runRadar(){
     //Make the radar do things. TODO.
 }
@@ -48,7 +50,7 @@ void Radar::scanFlightZone(vector<Aircraft*> airplanes){
 void Radar::dispAircraftTooLow(){
     vector<Aircraft*> airplanesTooLow; //create vector to store all aircraft that *are* flying too low
 
-    for(Aircraft* airplane : flightsInAirspace)
+    for(Aircraft* airplane : flightsInAirSpace)
     {
         if(airplane->getCoordinates().p_z <= Radar::MIN_SAFE_ALTITUDE)
             cout << "Aircraft ID: " << airplane->getId() << " is flying too low." << endl;
