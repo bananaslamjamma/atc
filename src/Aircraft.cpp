@@ -38,17 +38,27 @@ Aircraft::Aircraft(int id){
 
 
 
-void *dummy(void *){
 
+Aircraft::~Aircraft() {
+	pthread_mutex_destroy( &mutex );
+	thread_id = NULL;
+
+}
+
+// you need to call another instance of
+void * Aircraft_run(void *arg){
+	Aircraft& air = *(Aircraft*) arg;
+	air.AircraftPrint();
 	sleep(5);
-	cout << "I'm a dummy";
+	cout << "waking up";
+	//pthread_exit(NULL);
 	return NULL;
 }
 
 void Aircraft::initializeAircraft(){
 	int rc;
 
-	if(pthread_create(&thread_id,NULL, dummy,(void *) this)!=EOK){
+	if(pthread_create(&thread_id,NULL, Aircraft_run,(void *) this)!=EOK){
 			thread_id=NULL;
 		}
 
@@ -67,20 +77,6 @@ void Aircraft::initializeAircraft(){
 
 }
 
-Aircraft::~Aircraft() {
-	thread_id = NULL;
-
-}
-
-void * Aircraft_run(void *arg){
-	Aircraft& air = *(Aircraft*) arg;
-
-	//pthread_join(&thread_id, NULL);
-	sleep(5);
-	cout << "waking up";
-	//pthread_exit(NULL);
-	return NULL;
-}
 
 void Aircraft::setLocation(Coordinates newPos){
 	location = newPos;
@@ -123,6 +119,10 @@ Coordinates Aircraft::getCoordinates(){
 //(x – h)2+ (y – k)2 = r2 (h,k) = coords of middle of the circle
 
 void Aircraft::AircraftPrint(){
+
+	//example of locks
+	pthread_mutex_lock(&mutex);
+	sleep(10);
 	cout << "ID: " << p_id << endl;
 	cout << "Coordinates X: " << grid_pos.p_x<< endl;
 	cout << "Coordinates Y: " << grid_pos.p_y<< endl;
@@ -133,6 +133,7 @@ void Aircraft::AircraftPrint(){
 	cout << "Velocity Z: " << velocity.v_z<< endl;
 
 	cout << "Entry Time: " << entryTime<< endl;
+	pthread_mutex_unlock(&mutex);
 }
 
 /**

@@ -22,6 +22,7 @@ class Aircraft{
 
 public:
 	pthread_t thread_id;
+	pthread_mutex_t mutex;
 	Aircraft(int, Coordinates, Velocity, int);
 	Aircraft();
 	Aircraft(int);
@@ -52,7 +53,6 @@ private:
 	int entryTime;
 	bool isColliding;
 	//Aircraft collider;
-	pthread_mutex_t mutex;
 
 };
 

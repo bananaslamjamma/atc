@@ -6,7 +6,7 @@
 #include "Airspace.h"
 #include "Radar.h"
 #include <pthread.h>
-#include "Radar.h"
+
 
 using namespace std;
 
@@ -16,17 +16,21 @@ Radar::Radar(Airspace* airspaceR,Communication* communcationR, pthread_attr_t* t
     //Constructor
     //'Marry' (I guess) the radar with the airspace so it knows where its overlooking?
     this->airspaceR = airspaceR;
-    this->communicationR = communcationR; 
+    this->communicationR = communcationR;
     this->tAttr = thread_attr;
     //Marry radar with the communication system. Maybe This is because radar needs
     //Comms to fetch aircraft data? Not sure. Other projects don't seem to do this, unless i'm not seeing something.
     //Uses of this will be figured out later, I guess.
 }
+
 Radar::Radar(){
     //empty constructor, this should never be called?
-		this->airspaceR = nullptr;
-	    this->communicationR = nullptr;
-	    this->tAttr = nullptr;
+		airspaceR = nullptr;
+	    communicationR = nullptr;
+	    tAttr = nullptr;
+}
+
+Radar::~Radar() {
 }
 
 void Radar::runRadar(){
@@ -47,12 +51,18 @@ void Radar::scanFlightZone(vector<Aircraft*> airplanes){
 
 void Radar::dispAircraftTooLow(){
     vector<Aircraft*> airplanesTooLow; //create vector to store all aircraft that *are* flying too low
-
-    for(Aircraft* airplane : flightsInAirspace)
+/***
+ *
+ *
+ *     for(Aircraft* airplane : flightsInAirspace)
     {
         if(airplane->getCoordinates().p_z <= Radar::MIN_SAFE_ALTITUDE)
             cout << "Aircraft ID: " << airplane->getId() << " is flying too low." << endl;
     }
+ *
+ *
+ */
+
 }
 
 void Radar::dispAircraftAboutToCrash()

@@ -81,8 +81,15 @@ void * old(){
 
 int main (int argc, char* argv[]) {
 	Aircraft air(5);
+	Aircraft air1(5);
+	Aircraft air2(5);
+	Aircraft air3(5);
+
 	//pthread_join(writer.thread_id,NULL);
 	pthread_join(air.thread_id,NULL);
+	pthread_join(air1.thread_id,NULL);
+	pthread_join(air2.thread_id,NULL);
+	pthread_join(air3.thread_id,NULL);
 	return EXIT_SUCCESS;
 
 
