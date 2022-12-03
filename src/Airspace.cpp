@@ -7,6 +7,7 @@
 #include "Velocity.h"
 #include "Coordinates.h"
 #include <vector>
+#include <sstream>
 #include <string>
 
 using namespace std;
@@ -36,28 +37,21 @@ Airspace::~Airspace() {
 // i'll have this read the input file
 void Airspace::init(){
 //read test cases from a .txt file and load them into a vector of airplanes
-ifstream planeFile;
-planeFile.open(PLANEFILE);
-
-//Declare temporary variables
-int appTime, xPos, xSpeed, yPos, ySpeed, zPos, zSpeed;
-string flightID;
-Coordinates tempCoords;
-Velocity tempVel;
+ifstream planeFile(PLANEFILE);;
+string lineHold;
 
 //Input file structured as: [ArrivalTime], [flightID], [xSpeed], [ySpeed], [zSpeed], [xPos], [yPos], [zPos]
-
-/***
- *
- *
- *
- *
- *
- *
- * 	while(std::getline(planeFile, appTime )) //check if there's still another plane to load
+	while(std::getline(planeFile, appTime )) //check if there's still another plane to load
 	{
+		//Declare temporary variables
+		int appTime, flightID, xPos, xSpeed, yPos, ySpeed, zPos, zSpeed;
+		Coordinates tempCoords;
+		Velocity tempVel;
+
+		stringstream tempLine(lineHold);
 		//get data out of the file
-		planeFile >> appTime >> flightID >> xSpeed >> ySpeed >> zSpeed >> xPos >> yPos >> zPos;
+
+		tempLine >> appTime >> flightID >> xSpeed >> ySpeed >> zSpeed >> xPos >> yPos >> zPos;
 		//create coordinates and velocity objects
 		tempCoords.p_x = xPos;
 		tempCoords.p_y = yPos;
@@ -75,11 +69,6 @@ Velocity tempVel;
 	}
 		//Verify this information somehow? It would be a debugging functionality only.
 		//This should in theory work, barring any syntax errors.
- *
- *
- *
- */
-
 }
 
 // run()

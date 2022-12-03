@@ -7,6 +7,7 @@
 #include <vector>
 #include "Coordinates.h"
 #include "Velocity.h"
+#include "math.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -28,7 +29,7 @@ public:
 	Aircraft(int);
 	virtual ~Aircraft();
 
-	void initializeAircraft();
+	void init_Aircraft();
 
 	void setAltitude(int);
 	void updateCoordinates();
@@ -43,11 +44,13 @@ public:
 	int getEntryTime();
 	Aircraft getCollider();
 
+	int calculateXYDistToOtherAircraft(int = 0, int = 0); //used by radar class w/ default parameters
+	int calculateZDistToOtherAircraft(int = 0); //used by radar class w/ default parameters
+
 	void AircraftPrint();
 
 private:
 	int p_id;
-	Coordinates location;
 	Coordinates grid_pos;
 	Velocity velocity;
 	int entryTime;

@@ -43,7 +43,7 @@ private:
 
 	Airspace* airspaceR;
 	Communication* communicationR;
-	vector<Aircraft*> flightsInAirSpace; //example program has this public, why?
+	vector<Aircraft*> aircraftInAirSpace; //example program has this public, why?
 
 };
 

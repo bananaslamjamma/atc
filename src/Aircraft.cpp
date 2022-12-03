@@ -1,4 +1,5 @@
 #include "Aircraft.h"
+#include "math.h"
 #include <iostream>
 
 using namespace std;
@@ -6,14 +7,10 @@ using namespace std;
 //make a copy of this constructor for a threaded version
 Aircraft::Aircraft(int id, Coordinates po, Velocity ve, int entryT) {
 	p_id = id;
-	location = po;
+	grid_pos = po;
 	velocity = ve;
 	entryTime = entryT;
 	isColliding = false;
-
-	grid_pos.p_x = location.p_x;
-	grid_pos.p_y = location.p_y;
-	grid_pos.p_z = location.p_z;
 }
 
 Aircraft::Aircraft(){
@@ -79,11 +76,11 @@ void Aircraft::initializeAircraft(){
 
 
 void Aircraft::setLocation(Coordinates newPos){
-	location = newPos;
+	grid_pos = newPos;
 }
 
 void Aircraft::setAltitude( int alt){
-	location.p_z = alt;
+	grid_pos.p_z = alt;
 	isColliding = false;
 }
 
@@ -98,9 +95,9 @@ void Aircraft::setCollision(int c){
 }
 
 void Aircraft::updateCoordinates(){
-	location.p_x += velocity.v_x;
-	location.p_y += velocity.v_y;
-	location.p_z += velocity.v_z;
+	grid_pos.p_x += velocity.v_x;
+	grid_pos.p_y += velocity.v_y;
+	grid_pos.p_z += velocity.v_z;
 }
 
 int Aircraft::getId() {
@@ -111,12 +108,33 @@ Velocity Aircraft::getVelocity(){
 	return velocity;
 }
 Coordinates Aircraft::getCoordinates(){
-	return location;
+	return grid_pos;
+}
+
+int Aircraft::calculateXYDistToOtherAircraft(int x, int y){
+	//Calculate using a^2 + b^2 = c^2 .
+	int distanceXY, diffX, diffY, square;
+
+	diffX = x - this->grid_pos.p_x;
+	diffY = y - this->grid_pos.p_y;
+
+	square = pow(diffX,2) + pow(diffY,2);
+	distanceXY = (int) sqrt(square); //cast back to INT, certainly some rounding here but we don't care.
+
+	return distanceXY;
+}
+
+int Aircraft::calculateZDistToOtherAircraft(int z){
+	//TODO
+	int distanceZ = abs(z - this->grid_pos.p_z); //Absolute value of the heigh difference between both aircraft
+
+	return distanceZ;
 }
 
 
 //holding pattern basically the function for a circle:
 //(x – h)2+ (y – k)2 = r2 (h,k) = coords of middle of the circle
+//I'm pretty sure we don't need this. To remove later?
 
 void Aircraft::AircraftPrint(){
 
