@@ -7,6 +7,7 @@
 #include <vector>
 #include "Coordinates.h"
 #include "Velocity.h"
+#include "math.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -42,6 +43,9 @@ public:
 	int getEntryTime();
 	Aircraft getCollider();
 
+	int calculateXYDistToOtherAircraft(int = 0, int = 0); //used by radar class w/ default parameters
+	int calculateZDistToOtherAircraft(int = 0); //used by radar class w/ default parameters
+
 	void AircraftPrint();
 	void * Aircraft_run(void *);
 	void *dummy(void *);
@@ -49,7 +53,6 @@ public:
 
 private:
 	int p_id;
-	Coordinates location;
 	Coordinates grid_pos;
 	Velocity velocity;
 	int entryTime;
