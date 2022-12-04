@@ -31,9 +31,6 @@ Aircraft::Aircraft(int id){
 	initializeAircraft();
 }
 
-
-
-
 Aircraft::~Aircraft() {
 	pthread_mutex_destroy( &mutex );
 	thread_id = NULL;
@@ -41,14 +38,17 @@ Aircraft::~Aircraft() {
 }
 
 // you need to call another instance of
-void * Aircraft_run(void *arg){
-	Aircraft& air = *(Aircraft*) arg;
-	air.AircraftPrint();
-	sleep(5);
-	cout << "waking up";
-	//pthread_exit(NULL);
+void * Aircraft::Aircraft_run(void *arg){
+	auto air = (Aircraft*) arg;
+	//debug
+	//air->AircraftPrint();
+	air->timer();
+	//sleep(5);
+	cout << "wow";
 	return NULL;
 }
+
+//create the the thread outside
 
 void Aircraft::initializeAircraft(){
 	int rc;
@@ -58,6 +58,8 @@ void Aircraft::initializeAircraft(){
 }
 
 
+
+// start listening for messages and reply back
 int Aircraft::server() {
    int rcvid;
    // struct containing our msg
@@ -80,10 +82,11 @@ int Aircraft::server() {
        if (rcvid == -1) {/* Error condition, exit */
            break;
        }
-       if (rcvid == 0) {/* Pulse received */
+       if (rcvid == 0) {/* Pulse received so "aircraft" will fly */
            switch (msg.hdr.code) {
            //start
            case PULSE_START:{
+        	   //move the aircraft
         	   updateCoordinates();
         	   break;
            }
@@ -93,11 +96,11 @@ int Aircraft::server() {
            break;
            }
        }
+       //else upon cin for change to aircraft attributes
            else {
         	   switch(msg.cmd_type){
-        	   //should probably change these to be constants
-        	   //answer radar request
-        	   case 1: {
+        	   //handle request if required info from plane
+        	   case UPDATE: {
         		   AircraftData_response rs;
         		   rs.response_coord = getCoordinates();
         		   rs.response_velo = getVelocity();
@@ -108,19 +111,19 @@ int Aircraft::server() {
         		   break;
         	   }
         	   //change altitude
-        	   case 2: {
+        	   case CHANGE_ALTITUDE: {
         		   setAltitude(msg.altitude);
         		    MsgReply(rcvid, EOK, NULL, 0 );
         		    break;
         	   }
         	   //change velocity
-        	   case 3: {
+        	   case CHANGE_VELOCITY: {
          		   setVelocity(msg.velo);
          		   MsgReply( rcvid, EOK, NULL, 0 );
          		  break;
         	   }
         	   //print
-        	   case 4: {
+        	   case PRINT: {
         		   AircraftPrint();
         		   MsgReply( rcvid, EOK, NULL, 0 );
         		   break;
@@ -133,17 +136,17 @@ int Aircraft::server() {
            }
    }
 
+
    //remove name from the space
    name_detach(attach, 0);
    return EXIT_SUCCESS;
 }
 
 
-//this sets off a periodic timer
-int Aircraft::client(){
-
+//attach timer to airplane channel and start server()
+int Aircraft::timer(){
     my_data_t msg;
-    // note: we create connection back to ourselves using (ch_id)
+    // note: we create a connection back to our own channel using (ch_id)
     // use separate class for timer functionality?
     int connection_id;
 	ch_id = ChannelCreate(0);
@@ -159,7 +162,6 @@ int Aircraft::client(){
 	//timer
 	timer_t mono_timer;
 
-	// set up the kind of event that we want to deliver -- a pulse
 	//timer pulse every 1 second
 	SIGEV_PULSE_INIT(&sig_event, connection_id, SIGEV_PULSE_PRIO_INHERIT, 1, 0);
 	//debugcout << "TIMER pulse initiated" << endl;
@@ -177,10 +179,45 @@ int Aircraft::client(){
     timer_config.it_interval.tv_nsec = 0;
 
     // start timer
+    cout << "aircraft: " << p_id << " has started their timer" << endl;
     timer_settime (mono_timer, 0, &timer_config, NULL);
 
+    //task has arrived, now wait for messages
+    cout << "aircraft: " << p_id << " has started the server" << endl;
     server();
     return EXIT_SUCCESS;
+}
+
+
+//start communication
+int Aircraft::client(int ch_id){
+	AircraftData msg;
+	//connect to arg's channel
+	//_NTO_SIDE_CHANNEL should always be used to ignore index
+	int connection_id = ConnectAttach(0,0,ch_id,_NTO_SIDE_CHANNEL,0);
+	for (int i = 0; i < 15; i++) {
+
+		/**
+		 *
+		 *
+		 * 		msg.command = 1;
+		PlanePositionResponse res;
+		MsgSend(connection_id, &msg, sizeof(msg), &res, sizeof(res));
+		std::cout << "Position: <" << res.currentPosition.x << ','
+				<< res.currentPosition.y << ',' << res.currentPosition.z
+				<< ">, ";
+		std::cout << "Velocity: <" << res.currentVelocity.x << ','
+				<< res.currentVelocity.y << ',' << res.currentVelocity.z << ">";
+		std::cout << std::endl;
+
+		sleepUntil = now() + 1000 * 1000 * 1000;
+		while (now() < sleepUntil)
+			;
+		 *
+		 */
+
+	}
+
 }
 
 void Aircraft::setLocation(Coordinates newPos){

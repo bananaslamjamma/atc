@@ -80,10 +80,13 @@ void * old(){
 }
 
 int main (int argc, char* argv[]) {
-	Aircraft air(5);
-	Aircraft air1(5);
-	Aircraft air2(5);
-	Aircraft air3(5);
+	Aircraft air(0);
+	Aircraft air1(2);
+	Aircraft air2(3);
+	Aircraft air3(4);
+
+	//pthread_t tid;
+	//pthread_create(&tid, NULL, &Aircraft::Aircraft_run, &air);
 
 	//pthread_join(writer.thread_id,NULL);
 	pthread_join(air.thread_id,NULL);

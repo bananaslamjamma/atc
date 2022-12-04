@@ -20,9 +20,10 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/dispatch.h>
+#include "constants.h"
 
-#define PULSE_START 1
-#define ATTACH_POINT "AIRCRAFT"
+//#define PULSE_START 1
+//#define ATTACH_POINT "AIRCRAFT"
 
 
 /* We specify the header as being at least a pulse */
@@ -78,6 +79,7 @@ public:
 	void setCollision(int);
 	int getEntryTime();
 	Aircraft getCollider();
+	static void * Aircraft_run(void *);
 
 	int calculateXYDistToOtherAircraft(int = 0, int = 0); //used by radar class w/ default parameters
 	int calculateZDistToOtherAircraft(int = 0); //used by radar class w/ default parameters
@@ -91,7 +93,8 @@ private:
 	int entryTime;
 	bool isColliding;
 	int server();
-	int client();
+	int timer();
+	int client(int);
 	//Aircraft collider;
 
 };
