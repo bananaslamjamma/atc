@@ -1,16 +1,18 @@
 #include "Aircraft.h"
 #include "math.h"
+#include <time.h>
 #include <iostream>
 
 using namespace std;
 
-//make a copy of this constructor for a threaded version
+
 Aircraft::Aircraft(int id, Coordinates po, Velocity ve, int entryT) {
 	p_id = id;
 	grid_pos = po;
 	velocity = ve;
 	entryTime = entryT;
-	isColliding = false;
+	hasArrived = false;
+	initializeAircraft();
 }
 
 Aircraft::Aircraft(){
@@ -20,14 +22,14 @@ Aircraft::Aircraft(){
 //debugging
 Aircraft::Aircraft(int id){
 	p_id = id;
-	Coordinates dummy;
-	Velocity dummy_v;
-	dummy.p_x = 1;
-	dummy.p_y = 2;
-	dummy.p_z = 3;
-	dummy_v.v_x = 3;
-	dummy_v.v_y = 2;
-	dummy_v.v_z = 1;
+	grid_pos.p_x = 1;
+	grid_pos.p_y = 0;
+	grid_pos.p_z = 1;
+	velocity.v_x = 1;
+	velocity.v_y = 1;
+	velocity.v_z = 1;
+	entryTime = 5;
+	hasArrived =  false;
 	initializeAircraft();
 }
 
@@ -37,70 +39,58 @@ Aircraft::~Aircraft() {
 
 }
 
-// you need to call another instance of
+// function that pthread_create() calls
 void * Aircraft::Aircraft_run(void *arg){
 	auto air = (Aircraft*) arg;
 	//debug
 	//air->AircraftPrint();
 	air->timer();
-	//sleep(5);
-	cout << "wow";
+	cout << "task completed";
 	return NULL;
 }
 
-//create the the thread outside
-
+//called upon constructor call
 void Aircraft::initializeAircraft(){
-	int rc;
 	if(pthread_create(&thread_id,NULL, Aircraft_run,(void *) this)!=EOK){
 			thread_id=NULL;
 		}
 }
-
-
 
 // start listening for messages and reply back
 int Aircraft::server() {
    int rcvid;
    // struct containing our msg
    AircraftData msg;
-   name_attach_t *attach;
 
-   //AIRCRAFT CHANNEl
-   /* Create a local name (/dev/name/local/...) */
-   if ((attach = name_attach(NULL, ATTACH_POINT, 0)) == NULL) {
-       return EXIT_FAILURE;
-   }
-   /* Do your MsgReceive's here now with the chid */
+   //don't need a local attach name
    while (1) {
-   	   /* Server will block in this call, until a client calls MsgSend to send a message to
-   	    * this server through the channel named "myname", which is the name that we set for the channel,
-   	    * i.e., the one that we stored at ATTACH_POINT and used in the name_attach call to create the channel. */
+	   cout << "entered server loop" << endl;
+   	   /* server will block until message received **/
 	   rcvid = MsgReceive(ch_id, &msg, sizeof(msg), NULL);
-	   /* In the above call, the received message will be stored at msg when the server receives a message.
-	    * Moreover, rcvid */
-       if (rcvid == -1) {/* Error condition, exit */
+	   /* received message will be stored in msg. */
+	   /* Error condition, exit */
+       if (rcvid == -1) {
+    	   cout << "error" << endl;
            break;
        }
        if (rcvid == 0) {/* Pulse received so "aircraft" will fly */
+    	   //cout << "pulse received" << endl;
+    	   //no other pulse codes
            switch (msg.hdr.code) {
-           //start
-           case PULSE_START:{
-        	   //move the aircraft
-        	   updateCoordinates();
-        	   break;
-           }
            default:
-        	   cout << "Plane: " << p_id << " has encountered an error" << endl;
-        	   MsgError( rcvid, ENOSYS );
+               	   //start
+            	   //move the aircraft
+            	   //cout << "being called" << endl;
+            	   updateCoordinates();
            break;
            }
        }
-       //else upon cin for change to aircraft attributes
+       //else upon cin for change to aircraft attributes, rcvid>0
            else {
         	   switch(msg.cmd_type){
         	   //handle request if required info from plane
-        	   case UPDATE: {
+        	   case PING:
+        		   cout << "being pinged" << endl;
         		   AircraftData_response rs;
         		   rs.response_coord = getCoordinates();
         		   rs.response_velo = getVelocity();
@@ -109,36 +99,31 @@ int Aircraft::server() {
         		   //send back the information
         		   MsgReply(rcvid, EOK, &rs, sizeof(rs));
         		   break;
-        	   }
+
         	   //change altitude
-        	   case CHANGE_ALTITUDE: {
+        	   case CHANGE_ALTITUDE:
         		   setAltitude(msg.altitude);
         		    MsgReply(rcvid, EOK, NULL, 0 );
         		    break;
-        	   }
+
         	   //change velocity
-        	   case CHANGE_VELOCITY: {
+        	   case CHANGE_VELOCITY:
          		   setVelocity(msg.velo);
          		   MsgReply( rcvid, EOK, NULL, 0 );
          		  break;
-        	   }
-        	   //print
-        	   case PRINT: {
-        		   AircraftPrint();
+
+        	   //exit
+        	   case EXIT:
         		   MsgReply( rcvid, EOK, NULL, 0 );
-        		   break;
-        	   }
+        		   //close the connection, stop listening
+        		   return EXIT_SUCCESS;
                default:
-               	   cout << "Plane: " << p_id << " has encountered an error" << endl;
+               	   cout << "Aircraft: " << p_id << " has encountered an error" << endl;
                	   MsgError( rcvid, ENOSYS );
                   break;
         	   }
            }
    }
-
-
-   //remove name from the space
-   name_detach(attach, 0);
    return EXIT_SUCCESS;
 }
 
@@ -147,10 +132,8 @@ int Aircraft::server() {
 int Aircraft::timer(){
     my_data_t msg;
     // note: we create a connection back to our own channel using (ch_id)
-    // use separate class for timer functionality?
     int connection_id;
 	ch_id = ChannelCreate(0);
-
 	connection_id = ConnectAttach(0,0,ch_id,0,0);
 	if(connection_id == -1){
 		std::cerr << "Timer, Failed to Attach error : " << errno << "\n";
@@ -161,9 +144,8 @@ int Aircraft::timer(){
 	struct itimerspec timer_config;
 	//timer
 	timer_t mono_timer;
-
 	//timer pulse every 1 second
-	SIGEV_PULSE_INIT(&sig_event, connection_id, SIGEV_PULSE_PRIO_INHERIT, 1, 0);
+	SIGEV_PULSE_INIT(&sig_event, connection_id, SIGEV_PULSE_PRIO_INHERIT, PULSE_CODE, 0);
 	//debugcout << "TIMER pulse initiated" << endl;
 
 	//create a timer
@@ -183,41 +165,36 @@ int Aircraft::timer(){
     timer_settime (mono_timer, 0, &timer_config, NULL);
 
     //task has arrived, now wait for messages
-    cout << "aircraft: " << p_id << " has started the server" << endl;
+    //cout << "aircraft: " << p_id << " has started the server" << endl;
     server();
     return EXIT_SUCCESS;
 }
 
 
 //start communication
-int Aircraft::client(int ch_id){
+int Aircraft::ping(int ch_id){
 	AircraftData msg;
+	AircraftData_response reply;
 	//connect to arg's channel
 	//_NTO_SIDE_CHANNEL should always be used to ignore index
 	int connection_id = ConnectAttach(0,0,ch_id,_NTO_SIDE_CHANNEL,0);
-	for (int i = 0; i < 15; i++) {
-
-		/**
-		 *
-		 *
-		 * 		msg.command = 1;
-		PlanePositionResponse res;
-		MsgSend(connection_id, &msg, sizeof(msg), &res, sizeof(res));
-		std::cout << "Position: <" << res.currentPosition.x << ','
-				<< res.currentPosition.y << ',' << res.currentPosition.z
-				<< ">, ";
-		std::cout << "Velocity: <" << res.currentVelocity.x << ','
-				<< res.currentVelocity.y << ',' << res.currentVelocity.z << ">";
-		std::cout << std::endl;
-
-		sleepUntil = now() + 1000 * 1000 * 1000;
-		while (now() < sleepUntil)
-			;
-		 *
-		 */
-
+	msg.cmd_type = PING;
+	//send a message 20 times to simulate runtime
+	for (int i = 0; i < 20; i++) {
+		MsgSend(connection_id, &msg, sizeof(msg), &reply, sizeof(reply));
+		cout << "Aircraft ID: " << p_id << endl;
+		cout << "--------------------------------------------------" << endl;
+		cout << "Coordinates : <" << grid_pos.p_x << ", " << grid_pos.p_y<<  ", " << grid_pos.p_z << " >" <<  endl;
+		cout << "--------------------------------------------------" << endl;
+		cout << "Velocity : <" << velocity.v_x << ", " << velocity.v_y<<  ", " << velocity.v_z << " >" <<  endl;
+		cout << "--------------------------------------------------" << endl;
+		cout << "Entry Time: " << entryTime<< endl;
+		//wait for 1s
+		sleep(1);
 	}
-
+	//send a message to close the connection
+	msg.cmd_type = EXIT;
+	MsgSend(connection_id, &msg, sizeof(msg), NULL, 0);
 }
 
 void Aircraft::setLocation(Coordinates newPos){
@@ -226,19 +203,17 @@ void Aircraft::setLocation(Coordinates newPos){
 
 void Aircraft::setAltitude( int alt){
 	grid_pos.p_z = alt;
-	isColliding = false;
 }
 
 void Aircraft::setVelocity(Velocity ve){
 	velocity.v_x = ve.v_x;
 	velocity.v_y = ve.v_y;
 	velocity.v_z= ve.v_z;
-	isColliding = false;
+
 }
 
-void Aircraft::setCollision(int c){
-	isColliding = true;
-	//collider = c;
+void Aircraft::setArrival(){
+	hasArrived = true;
 }
 
 void Aircraft::updateCoordinates(){
@@ -270,7 +245,6 @@ int Aircraft::calculateXYDistToOtherAircraft(int x, int y){
 
 	return distanceXY;
 }
-
 int Aircraft::calculateZDistToOtherAircraft(int z){
 	//TODO
 	int distanceZ = abs(z - this->grid_pos.p_z); //Absolute value of the heigh difference between both aircraft
@@ -279,28 +253,15 @@ int Aircraft::calculateZDistToOtherAircraft(int z){
 }
 
 void Aircraft::AircraftPrint(){
-
-	//example of locks
-	pthread_mutex_lock(&mutex);
-	sleep(10);
 	cout << "ID: " << p_id << endl;
 	cout << "Coordinates X: " << grid_pos.p_x<< endl;
 	cout << "Coordinates Y: " << grid_pos.p_y<< endl;
 	cout << "Coordinates Z: " << grid_pos.p_z<< endl;
-
 	cout << "Velocity X: " << velocity.v_x<< endl;
 	cout << "Velocity Y: " << velocity.v_y<< endl;
 	cout << "Velocity Z: " << velocity.v_z<< endl;
-
 	cout << "Entry Time: " << entryTime<< endl;
-	pthread_mutex_unlock(&mutex);
 }
-
-/**
- * Aircraft Aircraft::getCollider(){
-	return collider;
-}
- */
 
 int Aircraft::getEntryTime() {
 	return entryTime;

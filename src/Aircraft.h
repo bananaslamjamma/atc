@@ -22,19 +22,13 @@
 #include <sys/dispatch.h>
 #include "constants.h"
 
-//#define PULSE_START 1
-//#define ATTACH_POINT "AIRCRAFT"
 
-
-/* We specify the header as being at least a pulse */
-/* All of your messages should start with this header */
-/* This struct contains a type/subtype field as the first 4 bytes.
- * The type and subtype field can be used to identify the message that is being received.
-/ * This allows you to identify data which isn't destined for your server. */
+/* specify header as a pulse */
+/*all messages should have a header */
 typedef struct _pulse msg_header_t;
 
 
-/* Our real data comes after the header */
+/* actual data comes after header */
 typedef struct AircraftData {
 	msg_header_t hdr;
 	int id;
@@ -51,8 +45,6 @@ typedef struct AircraftData_response {
     Velocity response_velo;
 } AircraftData_response;
 
-
-
 class Aircraft{
 
 public:
@@ -64,9 +56,7 @@ public:
 	Aircraft();
 	Aircraft(int);
 	virtual ~Aircraft();
-
 	void initializeAircraft();
-
 	void setAltitude(int);
 	void updateCoordinates();
 	int getId();
@@ -76,26 +66,25 @@ public:
 	Coordinates getCoordinates();
 	void setLocation(Coordinates p);
 	void setVelocity(Velocity v);
-	void setCollision(int);
+	void setArrival();
 	int getEntryTime();
 	Aircraft getCollider();
 	static void * Aircraft_run(void *);
+	int ping(int);
+
 
 	int calculateXYDistToOtherAircraft(int = 0, int = 0); //used by radar class w/ default parameters
 	int calculateZDistToOtherAircraft(int = 0); //used by radar class w/ default parameters
 
 	void AircraftPrint();
 private:
-	//double as ch_id for IPC
 	int p_id;
 	Coordinates grid_pos;
 	Velocity velocity;
 	int entryTime;
-	bool isColliding;
+	bool hasArrived;
 	int server();
 	int timer();
-	int client(int);
-	//Aircraft collider;
 
 };
 
