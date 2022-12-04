@@ -40,6 +40,7 @@ void Airspace::init(){
 ifstream planeFile(PLANEFILE);;
 string lineHold;
 
+/**
 //Input file structured as: [ArrivalTime], [flightID], [xSpeed], [ySpeed], [zSpeed], [xPos], [yPos], [zPos]
 	while(std::getline(planeFile, appTime )) //check if there's still another plane to load
 	{
@@ -69,7 +70,10 @@ string lineHold;
 	}
 		//Verify this information somehow? It would be a debugging functionality only.
 		//This should in theory work, barring any syntax errors.
+		 * */
 }
+
+
 
 // run()
 // funct to update each flight's position

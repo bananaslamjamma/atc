@@ -19,7 +19,6 @@ Aircraft::Aircraft(){
 
 //debugging
 Aircraft::Aircraft(int id){
-
 	p_id = id;
 	Coordinates dummy;
 	Velocity dummy_v;
@@ -29,7 +28,6 @@ Aircraft::Aircraft(int id){
 	dummy_v.v_x = 3;
 	dummy_v.v_y = 2;
 	dummy_v.v_z = 1;
-
 	initializeAircraft();
 }
 
@@ -54,26 +52,136 @@ void * Aircraft_run(void *arg){
 
 void Aircraft::initializeAircraft(){
 	int rc;
-
 	if(pthread_create(&thread_id,NULL, Aircraft_run,(void *) this)!=EOK){
 			thread_id=NULL;
 		}
-
-	// i don't care about the shared memory as of rn
-
-	//pthread_attr_t attr;
-	/* synchronization stuff */
-	//pthread_attr_getdetachstate = (&attr ,PTHREAD_CREATE_JOINABLE);
-	//pthread_mutexattr_init(&attr);
-	//lock count
-	//pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-	//mutex init
-	//pthread_mutex_init(&this->mutex, &attr);
-	 //rc = pthread_create(&thread_id, NULL,Aircraft_run,(void *) this)!=EOK
-
-
 }
 
+
+int Aircraft::server() {
+   int rcvid;
+   // struct containing our msg
+   AircraftData msg;
+   name_attach_t *attach;
+
+   //AIRCRAFT CHANNEl
+   /* Create a local name (/dev/name/local/...) */
+   if ((attach = name_attach(NULL, ATTACH_POINT, 0)) == NULL) {
+       return EXIT_FAILURE;
+   }
+   /* Do your MsgReceive's here now with the chid */
+   while (1) {
+   	   /* Server will block in this call, until a client calls MsgSend to send a message to
+   	    * this server through the channel named "myname", which is the name that we set for the channel,
+   	    * i.e., the one that we stored at ATTACH_POINT and used in the name_attach call to create the channel. */
+	   rcvid = MsgReceive(ch_id, &msg, sizeof(msg), NULL);
+	   /* In the above call, the received message will be stored at msg when the server receives a message.
+	    * Moreover, rcvid */
+       if (rcvid == -1) {/* Error condition, exit */
+           break;
+       }
+       if (rcvid == 0) {/* Pulse received */
+           switch (msg.hdr.code) {
+           //start
+           case PULSE_START:{
+        	   updateCoordinates();
+        	   break;
+           }
+           default:
+        	   cout << "Plane: " << p_id << " has encountered an error" << endl;
+        	   MsgError( rcvid, ENOSYS );
+           break;
+           }
+       }
+           else {
+        	   switch(msg.cmd_type){
+        	   //should probably change these to be constants
+        	   //answer radar request
+        	   case 1: {
+        		   AircraftData_response rs;
+        		   rs.response_coord = getCoordinates();
+        		   rs.response_velo = getVelocity();
+        		   rs.response_id = getId();
+        		   //EOK no error
+        		   //send back the information
+        		   MsgReply(rcvid, EOK, &rs, sizeof(rs));
+        		   break;
+        	   }
+        	   //change altitude
+        	   case 2: {
+        		   setAltitude(msg.altitude);
+        		    MsgReply(rcvid, EOK, NULL, 0 );
+        		    break;
+        	   }
+        	   //change velocity
+        	   case 3: {
+         		   setVelocity(msg.velo);
+         		   MsgReply( rcvid, EOK, NULL, 0 );
+         		  break;
+        	   }
+        	   //print
+        	   case 4: {
+        		   AircraftPrint();
+        		   MsgReply( rcvid, EOK, NULL, 0 );
+        		   break;
+        	   }
+               default:
+               	   cout << "Plane: " << p_id << " has encountered an error" << endl;
+               	   MsgError( rcvid, ENOSYS );
+                  break;
+        	   }
+           }
+   }
+
+   //remove name from the space
+   name_detach(attach, 0);
+   return EXIT_SUCCESS;
+}
+
+
+//this sets off a periodic timer
+int Aircraft::client(){
+
+    my_data_t msg;
+    // note: we create connection back to ourselves using (ch_id)
+    // use separate class for timer functionality?
+    int connection_id;
+	ch_id = ChannelCreate(0);
+
+	connection_id = ConnectAttach(0,0,ch_id,0,0);
+	if(connection_id == -1){
+		std::cerr << "Timer, Failed to Attach error : " << errno << "\n";
+	}
+	//define clock attributes
+	struct sigevent sig_event;
+	//delay, reload
+	struct itimerspec timer_config;
+	//timer
+	timer_t mono_timer;
+
+	// set up the kind of event that we want to deliver -- a pulse
+	//timer pulse every 1 second
+	SIGEV_PULSE_INIT(&sig_event, connection_id, SIGEV_PULSE_PRIO_INHERIT, 1, 0);
+	//debugcout << "TIMER pulse initiated" << endl;
+
+	//create a timer
+	//bind it to the event
+	if (timer_create(CLOCK_MONOTONIC, &sig_event, &mono_timer) == -1){
+		std::cerr << "Timer, Init error : " << errno << "\n";
+	}
+
+	// delay should be arrivalTime of each task(aircraft)
+    timer_config.it_value.tv_sec = getEntryTime();
+    timer_config.it_value.tv_nsec = 0;
+    timer_config.it_interval.tv_sec = 1;
+    timer_config.it_interval.tv_nsec = 0;
+
+    // start timer
+    timer_settime (mono_timer, 0, &timer_config, NULL);
+
+    server();
+    return EXIT_SUCCESS;
+}
 
 void Aircraft::setLocation(Coordinates newPos){
 	grid_pos = newPos;
@@ -85,7 +193,9 @@ void Aircraft::setAltitude( int alt){
 }
 
 void Aircraft::setVelocity(Velocity ve){
-	velocity = ve;
+	velocity.v_x = ve.v_x;
+	velocity.v_y = ve.v_y;
+	velocity.v_z= ve.v_z;
 	isColliding = false;
 }
 
@@ -130,11 +240,6 @@ int Aircraft::calculateZDistToOtherAircraft(int z){
 
 	return distanceZ;
 }
-
-
-//holding pattern basically the function for a circle:
-//(x – h)2+ (y – k)2 = r2 (h,k) = coords of middle of the circle
-//I'm pretty sure we don't need this. To remove later?
 
 void Aircraft::AircraftPrint(){
 

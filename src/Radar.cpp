@@ -36,14 +36,12 @@ Radar::Radar(){
 Radar::~Radar() {
 }
 
-Radar::~Radar(){} //Deconstructor needed to be declared. Maybe something will be put in here?
-
 void Radar::runRadar(){
 	//TODO
     //Make the radar do things.
 
 	//There should probably be some sort of lock here? I dunno. 'getPlanes' performs a lock.
-	scanFlightZone(this->airspaceR->getPlanes());
+	//scanFlightZone(this->airspaceR->getPlanes());
 }
 
 void Radar::scanFlightZone(vector<Aircraft*> airplanes){
