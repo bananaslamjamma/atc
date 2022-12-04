@@ -246,8 +246,7 @@ int Aircraft::calculateXYDistToOtherAircraft(int x, int y){
 	return distanceXY;
 }
 int Aircraft::calculateZDistToOtherAircraft(int z){
-	//TODO
-	int distanceZ = abs(z - this->grid_pos.p_z); //Absolute value of the heigh difference between both aircraft
+	int distanceZ = abs(z - this->grid_pos.p_z); //Absolute value of the height difference between both aircraft
 
 	return distanceZ;
 }

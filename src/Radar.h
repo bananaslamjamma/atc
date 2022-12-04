@@ -12,7 +12,6 @@
 
 using namespace std;
 
-//#define INPUT "TODO/todo.txt" //Left this out for now, probably useless?
 
 class Radar{
 public:
@@ -20,13 +19,13 @@ public:
 	Radar(); //blank constructor
 	virtual ~Radar();
 
-	pthread_t run(); //i'm not so sure this should be here?
+	pthread_t run();
 	void runRadar();
 	void scanFlightZone(vector<Aircraft*>); //assuming this function will receive a vector of pointers to aircraft objects
 	void dispAircraftAboutToCrash();
 	void dispAircraftTooLow();
 
-	//lets declare some constants that will probably  be useful
+	//Declare constants
 	const int static MIN_RADAR_HEIGHT = 15000;
 	const int static MAX_RADAR_HEIGHT = 40000; //Min height + height of flight zone (25000)
 	const int static MIN_SAFE_ALTITUDE = 15000; //Same as minimum height of tracking area
@@ -43,7 +42,7 @@ private:
 
 	Airspace* airspaceR;
 	Communication* communicationR;
-	vector<Aircraft*> aircraftInAirSpace; //example program has this public, why?
+	vector<Aircraft*> aircraftInAirSpace;
 
 };
 

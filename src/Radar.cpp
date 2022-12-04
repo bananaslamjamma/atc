@@ -1,6 +1,7 @@
 /*
  * Radar.cpp
  *
+ * Author: Zachary
  */
 
 #include "Coordinates.h"
@@ -20,8 +21,7 @@ Radar::Radar(Airspace* airspaceR,Communication* communcationR, pthread_attr_t* t
     this->airspaceR = airspaceR;
     this->communicationR = communcationR;
     this->tAttr = thread_attr;
-    //Marry radar with the communication system. Maybe This is because radar needs
-    //Comms to fetch aircraft
+    //Marry radar with the communication system.
 }
 
 Radar::Radar(){

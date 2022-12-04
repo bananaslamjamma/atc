@@ -44,8 +44,8 @@ public:
 
 
 private:
-	//table of aircraft, id and aircraft object
-	//map the id's and planes together
+	//table of aircraft, ID and aircraft object
+	//map the ID's and planes together
 	std::map<int, Aircraft> airspace;
 	pthread_mutex_t m_airspace = PTHREAD_MUTEX_INITIALIZER;
 };
