@@ -14,9 +14,6 @@ using namespace std;
 
 #define PLANEFILE "testPlanes.txt"
 
-//this isn't really an "airspace"
-// it manages a data structure filled with aircrafts really
-
 
 Airspace::Airspace() {
 	//just have the mutex here
@@ -40,8 +37,9 @@ void Airspace::init(){
 ifstream planeFile(PLANEFILE);;
 string lineHold;
 
+/**
 //Input file structured as: [ArrivalTime], [flightID], [xSpeed], [ySpeed], [zSpeed], [xPos], [yPos], [zPos]
-	while(getline(planeFile, lineHold)) //check if there's still another plane to load
+	while(std::getline(planeFile, appTime )) //check if there's still another plane to load
 	{
 		//Declare temporary variables
 		int appTime, flightID, xPos, xSpeed, yPos, ySpeed, zPos, zSpeed;
@@ -67,9 +65,12 @@ string lineHold;
 		addAircraft(tempAircraft);
 
 	}
-//Do other initialization things here.
-
+		//Verify this information somehow? It would be a debugging functionality only.
+		//This should in theory work, barring any syntax errors.
+		 * */
 }
+
+
 
 // run()
 // funct to update each flight's position
