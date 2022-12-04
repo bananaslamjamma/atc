@@ -31,16 +31,16 @@ int main (int argc, char* argv[]) {
 	Velocity velo1 =  setupVelocity(1, 1, 1);
 	Velocity velo2 = setupVelocity(2,2,2);
 	Aircraft air(1 , coord1, velo1, 3);
-	//Aircraft air1(2);
+	Aircraft air1(2);
 	//Aircraft air2(2);
 	//Aircraft air3(3);
 	printf("Calling client\n\n");
 	air.ping(air.ch_id);
-	//air1.client(air1.ch_id);
-	//air.client(air.ch_id);
+	air1.ping(air1.ch_id);
+	//air.ping(air.ch_id);
 
 	pthread_join(air.thread_id,NULL);
-	//pthread_join(air1.thread_id,NULL);
+	pthread_join(air1.thread_id,NULL);
 	//pthread_join(air2.thread_id,NULL);
 	//pthread_join(air3.thread_id,NULL);
 	return EXIT_SUCCESS;

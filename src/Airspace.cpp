@@ -14,9 +14,6 @@ using namespace std;
 
 #define PLANEFILE "testPlanes.txt"
 
-//this isn't really an "airspace"
-// it manages a data structure filled with aircrafts really
-
 
 Airspace::Airspace() {
 	//just have the mutex here
