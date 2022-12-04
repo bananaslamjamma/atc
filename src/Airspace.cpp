@@ -36,13 +36,14 @@ Airspace::~Airspace() {
 
 // i'll have this read the input file
 void Airspace::init(){
+	/*
 //read test cases from a .txt file and load them into a vector of airplanes
-ifstream planeFile(PLANEFILE);;
+ifstream planeFile(PLANEFILE);
 string lineHold;
 
-/**
+
 //Input file structured as: [ArrivalTime], [flightID], [xSpeed], [ySpeed], [zSpeed], [xPos], [yPos], [zPos]
-	while(std::getline(planeFile, appTime )) //check if there's still another plane to load
+	while(getline(planeFile, lineHold )) //check if there's still another plane to load
 	{
 		//Declare temporary variables
 		int appTime, flightID, xPos, xSpeed, yPos, ySpeed, zPos, zSpeed;
@@ -70,7 +71,7 @@ string lineHold;
 	}
 		//Verify this information somehow? It would be a debugging functionality only.
 		//This should in theory work, barring any syntax errors.
-		 * */
+*/
 }
 
 
@@ -86,6 +87,7 @@ void Airspace::updateAllPlanesPosition(){
 
 //add aircraft to the air space
 void Airspace::addAircraft(Aircraft plane) {
+	cout << "Oh Hi mark." << endl;
 	pthread_mutex_lock(&m_airspace);
 	int id =  plane.getId();
 	//add a plane to the airspace

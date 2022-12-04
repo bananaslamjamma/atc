@@ -11,6 +11,7 @@ Aircraft::Aircraft(int id, Coordinates po, Velocity ve, int entryT) {
 	velocity = ve;
 	entryTime = entryT;
 	isColliding = false;
+	initializeAircraft();
 }
 
 Aircraft::Aircraft(){
