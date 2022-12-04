@@ -1,6 +1,5 @@
 /*
  * Radar.cpp
- * Unfinished, but theoretically works.
  *
  */
 
@@ -17,17 +16,16 @@ using namespace std;
 
 Radar::Radar(Airspace* airspaceR,Communication* communcationR, pthread_attr_t* thread_attr){
     //Constructor
-    //'Marry' (I guess) the radar with the airspace so it knows where its overlooking?
+    //merge the radar with the airspace so it knows where its overlooking
     this->airspaceR = airspaceR;
     this->communicationR = communcationR;
     this->tAttr = thread_attr;
     //Marry radar with the communication system. Maybe This is because radar needs
-    //Comms to fetch aircraft data? Not sure. Other projects don't seem to do this, unless i'm not seeing something.
-    //Uses of this will be figured out later, I guess.
+    //Comms to fetch aircraft
 }
 
 Radar::Radar(){
-    //empty constructor, this should never be called?
+    //empty constructor
 		airspaceR = nullptr;
 	    communicationR = nullptr;
 	    tAttr = nullptr;
@@ -38,9 +36,6 @@ Radar::~Radar() {
 
 void Radar::runRadar(){
 	//TODO
-    //Make the radar do things.
-
-	//There should probably be some sort of lock here? I dunno. 'getPlanes' performs a lock.
 	//scanFlightZone(this->airspaceR->getPlanes());
 }
 
