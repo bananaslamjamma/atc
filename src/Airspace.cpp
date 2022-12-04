@@ -30,44 +30,7 @@ Airspace::Airspace() {
 
 Airspace::~Airspace() {
 }
-
-// i'll have this read the input file
 void Airspace::init(){
-//read test cases from a .txt file and load them into a vector of airplanes
-ifstream planeFile(PLANEFILE);;
-string lineHold;
-
-/**
-//Input file structured as: [ArrivalTime], [flightID], [xSpeed], [ySpeed], [zSpeed], [xPos], [yPos], [zPos]
-	while(std::getline(planeFile, appTime )) //check if there's still another plane to load
-	{
-		//Declare temporary variables
-		int appTime, flightID, xPos, xSpeed, yPos, ySpeed, zPos, zSpeed;
-		Coordinates tempCoords;
-		Velocity tempVel;
-
-		stringstream tempLine(lineHold);
-		//get data out of the file
-
-		tempLine >> appTime >> flightID >> xSpeed >> ySpeed >> zSpeed >> xPos >> yPos >> zPos;
-		//create coordinates and velocity objects
-		tempCoords.p_x = xPos;
-		tempCoords.p_y = yPos;
-		tempCoords.p_z = zPos;
-
-		tempVel.v_x = xSpeed;
-		tempVel.v_y = ySpeed;
-		tempVel.v_z = zSpeed;
-
-		//create a plane object
-		Aircraft tempAircraft(flightID, tempCoords, tempVel, appTime);
-		//load it into airCraft vector or maybe just call addAircraft directly?
-		addAircraft(tempAircraft);
-
-	}
-		//Verify this information somehow? It would be a debugging functionality only.
-		//This should in theory work, barring any syntax errors.
-		 * */
 }
 
 
@@ -90,7 +53,6 @@ void Airspace::addAircraft(Aircraft plane) {
 	pthread_mutex_unlock(&m_airspace);
 
 }
-
 
 //return a vector of airplanes within the airspace
 std::vector<Aircraft> Airspace::getPlanes(){
