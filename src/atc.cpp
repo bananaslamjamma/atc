@@ -71,7 +71,7 @@ void fileParser(){
 				//load it into airCraft vector or maybe just call addAircraft directly?
 				//addAircraft(tempAircraft);
 				//AH.push_back(tempAircraft);
-				//std::cout << "aha." << std::endl; //debugging
+				//std::cout << "test." << std::endl; //debugging
 			}
 			else continue;
 		}

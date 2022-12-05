@@ -16,9 +16,9 @@ using namespace std;
 
 
 Airspace::Airspace() {
-	//just have the mutex here
+	//Have the mutex here
 	pthread_mutexattr_t attr;
-	/* synchronization stuff */
+	/* synchronization */
 	pthread_mutexattr_init(&attr);
 	//lock count
 	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
@@ -35,8 +35,7 @@ void Airspace::init(){
 
 
 
-// run()
-// funct to update each flight's position
+// func to update each flight's position
 void Airspace::updateAllPlanesPosition(){
 
 
